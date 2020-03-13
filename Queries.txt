@@ -79,6 +79,12 @@ CREATE (paper)-[:CONTAINS]->(keyword)
 --------- Q1 ---------
 
 --------- Q2 ---------
+MATCH (conference:Conference)<-[:PUBLISHED_CONFERENCE]-(paper1:Paper)<-[cited:CITED]-()
+WITH conference, paper1, COUNT(cited) AS number
+ORDER BY conference.conference_name, number DESC, paper1.paper_id
+WITH conference, collect(paper1) AS paper_list
+UNWIND paper_list[0..3] AS top3
+RETURN conference.conference_name, top3.paper_title
 
 --------- Q3 ---------
 
