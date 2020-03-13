@@ -77,6 +77,15 @@ MERGE (paper:Paper {paper_id: article.id})
 CREATE (paper)-[:CONTAINS]->(keyword)
 
 --------- Q1 ---------
+MATCH (author:Author)-[:WRITES]->(paper1:Paper)-[paper2:CITED_BY]->()
+WITH author, paper1, COUNT(paper2) AS number
+ORDER BY author.author_name, number DESC
+WITH author, collect(number) AS list
+WITH author, list, range(1, size(list), 1) AS indexes
+WITH author, reduce(hindex=0, index IN indexes |
+    CASE WHEN list[index-1] >= index THEN hindex + 1 ELSE hindex END
+) as hindex
+RETURN author, hindex
 
 --------- Q2 ---------
 MATCH (conference:Conference)<-[:PUBLISHED_CONFERENCE]-(paper1:Paper)<-[cited:CITED]-()
