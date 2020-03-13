@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-journals = pd.read_csv("output_article.csv",error_bad_lines=False, sep=';', na_values = 'N', 
+journals = pd.read_csv("./dblp2/output_article.csv",error_bad_lines=False, sep=';', na_values = 'N', 
                       converters={i: str for i in range(0, 100)}, nrows=3000)
 columns = ['id','author', 'journal', 'title', 'volume', 'year', 'mdate', 'key', 'url']
 

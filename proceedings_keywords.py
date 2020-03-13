@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-proceeding = pd.read_csv("output_inproceedings.csv", error_bad_lines=False, sep=';', 
+proceeding = pd.read_csv("./dblp2/output_inproceedings.csv", error_bad_lines=False, sep=';', 
                       converters={i: str for i in range(0, 100)},  nrows=3000)
 
 columns = ['id','author', 'crossref', 'title', 'year', 'mdate', 'key', 'url']
