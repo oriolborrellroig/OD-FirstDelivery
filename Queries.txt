@@ -63,6 +63,19 @@ MATCH (paper1:Paper {paper_id: article.paperID})
 MATCH (paper2:Paper {paper_id: article.citedID})
 MERGE (paper1)-[:CITED {year: article.year}]->(paper2)
 
+--------- Create Keywords ---------
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///keywords.csv' AS article FIELDTERMINATOR ';'
+MERGE (keyword:Keyword {keyword: article.keywords})
+MERGE (paper:Paper {paper_id: article.id})
+CREATE (paper)-[:CONTAINS]->(keyword)
+
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///keywords_proceedings.csv' AS article FIELDTERMINATOR ';'
+MERGE (keyword:Keyword {keyword: article.keywords})
+MERGE (paper:Paper {paper_id: article.id})
+CREATE (paper)-[:CONTAINS]->(keyword)
+
 --------- Q1 ---------
 
 --------- Q2 ---------
