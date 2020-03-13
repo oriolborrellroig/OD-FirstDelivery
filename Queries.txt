@@ -1,0 +1,72 @@
+--------- See All Objects ---------
+MATCH (n)
+Return n
+
+--------- Delete All Objects ---------
+MATCH (n) 
+DETACH DELETE n
+
+--------- Create Journals ---------
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///articles.csv' AS article FIELDTERMINATOR ';'
+MERGE (author:Author {author_name: article.author})
+MERGE (journal:Journal {journal_name: article.journal})
+MERGE (volume:Volume {volume_name: article.volume})
+MERGE (year:Year {year: article.year})
+CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
+CREATE (author)-[:WRITES]->(paper)
+CREATE (paper)-[:PUBLISHED_JOURNAL]->(journal)
+MERGE(journal)-[:BELONGS]->(volume)
+MERGE(volume)-[:YEAR_VOLUME]->(year)
+
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///articles_citations.csv' AS article FIELDTERMINATOR ';'
+MATCH (paper1:Paper {paper_id: article.paperID})
+MATCH (paper2:Paper {paper_id: article.citedID})
+MERGE (paper1)-[:CITED {year: article.year}]->(paper2)
+
+--------- Create Conferences ---------
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///conferences.csv' AS article FIELDTERMINATOR ';'
+MERGE (author:Author {author_name: article.author})
+MERGE (conference:Conference {conference_name: article.conference})
+MERGE (edition:Edition {edition_name: article.edition})
+MERGE (year:Year {year: article.year})
+CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
+CREATE (author)-[:WRITES]->(paper)
+CREATE (paper)-[:PUBLISHED_CONFERENCE]->(conference)
+MERGE(conference)-[:PUBLISHED_CONFERENCE]->(edition)
+MERGE(edition)-[:YEAR_EDITION]->(year)
+
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///conferences_citations.csv' AS article FIELDTERMINATOR ';'
+MATCH (paper1:Paper {paper_id: article.paperID})
+MATCH (paper2:Paper {paper_id: article.citedID})
+MERGE (paper1)-[:CITED {year: article.year}]->(paper2)
+
+--------- Create Workshops ---------
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///workshops.csv' AS article FIELDTERMINATOR ';'
+MERGE (author:Author {author_name: article.author})
+MERGE (workshop:Workshop {workshop_name: article.conference})
+MERGE (edition:Edition {edition_name: article.edition})
+MERGE (year:Year {year: article.year})
+CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
+CREATE (author)-[:WRITES]->(paper)
+CREATE (paper)-[:PUBLISHED_WORKSHOP]->(workshop)
+MERGE(workshop)-[:PUBLISHED_WORKSHOP]->(edition)
+MERGE(edition)-[:YEAR_EDITION]->(year)
+
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///workshops_citations.csv' AS article FIELDTERMINATOR ';'
+MATCH (paper1:Paper {paper_id: article.paperID})
+MATCH (paper2:Paper {paper_id: article.citedID})
+MERGE (paper1)-[:CITED {year: article.year}]->(paper2)
+
+--------- Q1 ---------
+
+--------- Q2 ---------
+
+--------- Q3 ---------
+
+--------- Q4 ---------
