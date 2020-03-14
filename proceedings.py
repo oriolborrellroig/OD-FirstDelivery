@@ -77,7 +77,7 @@ for i in range(maxNumberOfArticles):
             newCitation = [conferences.iloc[i]['id'], conferences.iloc[randomLine]['id'], conferences.iloc[randomLine]['year']]
             citations.append(newCitation)
 
-cit = pd.DataFrame(columns=['paperID', 'citedID', 'year'])
+cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
 cit.to_csv("conferences_citations.csv", mode='w', index=False, sep=';', header=True)
 citations = pd.DataFrame(citations)
 citations.to_csv("conferences_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)

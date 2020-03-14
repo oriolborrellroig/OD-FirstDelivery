@@ -16,13 +16,13 @@ MERGE (year:Year {year: article.year})
 CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
 CREATE (author)-[:WRITES]->(paper)
 CREATE (paper)-[:PUBLISHED_VOLUME]->(volume)
-MERGE (volume)-[:BELONGS]->(journal)
+MERGE (volume)-[:BELONGS_JOUR]->(journal)
 MERGE (volume)-[:YEAR_VOLUME]->(year)
 
 :auto USING PERIODIC COMMIT 500
 LOAD CSV WITH HEADERS FROM 'file:///articles_citations.csv' AS article FIELDTERMINATOR ';'
 MATCH (paper1:Paper {paper_id: article.paperID})
-MATCH (paper2:Paper {paper_id: article.citedID})
+MATCH (paper2:Paper {paper_id: article.cited_byID})
 MERGE (paper1)-[:CITED_BY {year: article.year}]->(paper2)
 
 --------- Create Conferences ---------
@@ -34,14 +34,14 @@ MERGE (edition:Edition {edition_name: article.edition})
 MERGE (year:Year {year: article.year})
 CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
 CREATE (author)-[:WRITES]->(paper)
-CREATE (paper)-[:CONFERENCE_EDITION]->(edition)
-MERGE  (edition)-[:CONFERENCE]->(conference)
+CREATE (paper)-[:PUBLISHED_CONF_EDITION]->(edition)
+MERGE  (edition)-[:BELONGS_CONF]->(conference)
 MERGE  (edition)-[:YEAR_EDITION]->(year)
 
 :auto USING PERIODIC COMMIT 500
 LOAD CSV WITH HEADERS FROM 'file:///conferences_citations.csv' AS article FIELDTERMINATOR ';'
 MATCH (paper1:Paper {paper_id: article.paperID})
-MATCH (paper2:Paper {paper_id: article.citedID})
+MATCH (paper2:Paper {paper_id: article.cited_byID})
 MERGE (paper1)-[:CITED_BY {year: article.year}]->(paper2)
 
 --------- Create Workshops ---------
@@ -53,14 +53,14 @@ MERGE (edition:Edition {edition_name: article.edition})
 MERGE (year:Year {year: article.year})
 CREATE (paper:Paper {paper_id: article.id, paper_title: article.title, paper_mdate: article.mdate})
 CREATE (author)-[:WRITES]->(paper)
-CREATE (paper)-[:WORKSHOP_EDITION]->(edition)
-MERGE  (edition)-[:WORKSHOP]->(workshop)
+CREATE (paper)-[:PUBLISHED_WORK_EDITION]->(edition)
+MERGE  (edition)-[:BELLONGS_WORK]->(workshop)
 MERGE  (edition)-[:YEAR_EDITION]->(year)
 
 :auto USING PERIODIC COMMIT 500
 LOAD CSV WITH HEADERS FROM 'file:///workshops_citations.csv' AS article FIELDTERMINATOR ';'
 MATCH (paper1:Paper {paper_id: article.paperID})
-MATCH (paper2:Paper {paper_id: article.citedID})
+MATCH (paper2:Paper {paper_id: article.cited_byID})
 MERGE (paper1)-[:CITED_BY {year: article.year}]->(paper2)
 
 --------- Create Keywords ---------
