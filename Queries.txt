@@ -96,7 +96,7 @@ UNWIND paper_list[0..3] AS top3
 RETURN conference AS conference, top3 AS paper
 
 --------- Q3 ---------
-MATCH (author:Author)-[:WRITES]->(:Paper)-[:CONFERENCE_EDITION]->(edition:Edition)-[:CONFERENCE]->(conference:Conference)
+MATCH (author:Author)-[:WRITES]->(:Paper)-[:PUBLISHED_CONF_EDITION]->(edition:Edition)-[:BELONGS_CONF]->(conference:Conference)
 WITH author, conference, collect(DISTINCT edition) AS editions, size(collect(DISTINCT edition)) AS numberEditions
 WHERE numberEditions>=4
 RETURN conference AS conference, author AS author, editions, numberEditions
@@ -105,5 +105,5 @@ RETURN conference AS conference, author AS author, editions, numberEditions
 MATCH (vol:Volume)-[:YEAR_VOLUME]->(y:Year)
 WHERE y.year = "2018" OR y.year = "2019"
 WITH vol
-MATCH (journal:Journal)<-[:BELONGS]-(vol:Volume)<-[pub:PUBLISHED_VOLUME]-(p:Paper)<-[cited:CITED_BY]-()
+MATCH (journal:Journal)<-[:BELONGS_JOUR]-(vol:Volume)<-[pub:PUBLISHED_VOLUME]-(p:Paper)<-[cited:CITED_BY]-()
 RETURN journal, COUNT(cited), COUNT(DISTINCT pub)
