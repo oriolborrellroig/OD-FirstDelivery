@@ -88,7 +88,7 @@ WITH author, reduce(hindex=0, index IN indexes |
 RETURN author, hindex
 
 --------- Q2 ---------
-MATCH (conference:Conference)<-[:PUBLISHED_CONFERENCE]-(paper1:Paper)<-[cited:CITED]-()
+MATCH (conference:Conference)<-[:BELONGS_CONF]-(edition:Edition)<-[:PUBLISHED_CONF_EDITION]-(paper1:Paper)<-[cited:CITED_BY]-()
 WITH conference, paper1, COUNT(cited) AS number
 ORDER BY conference.conference_name, number DESC, paper1.paper_id
 WITH conference, collect(paper1) AS paper_list

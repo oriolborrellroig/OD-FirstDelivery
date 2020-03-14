@@ -5,7 +5,6 @@ from random import seed
 from random import random
 from random import randint
 import numpy as np
-import matplotlib.pyplot as plt
 
 np.random.seed(seed=1)
 seed(1)
