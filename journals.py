@@ -7,6 +7,7 @@ from random import randint
 import numpy as np
 import matplotlib.pyplot as plt
 
+np.random.seed(seed=1)
 seed(1)
 
 journals = pd.read_csv("./dblp2/output_article.csv",error_bad_lines=False, sep=';', na_values = 'N',

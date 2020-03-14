@@ -5,6 +5,7 @@ from random import seed
 from random import randint
 import numpy as np
 
+np.random.seed(seed=1)
 seed(1)
 
 proceeding = pd.read_csv("./dblp2/output_inproceedings.csv", error_bad_lines=False, sep=';', 
