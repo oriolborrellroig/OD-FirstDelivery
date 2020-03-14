@@ -107,3 +107,32 @@ WHERE y.year = "2018" OR y.year = "2019"
 WITH vol
 MATCH (journal:Journal)<-[:BELONGS_JOUR]-(vol:Volume)<-[pub:PUBLISHED_VOLUME]-(p:Paper)<-[cited:CITED_BY]-()
 RETURN journal, COUNT(cited), COUNT(DISTINCT pub)
+
+--------- Graph algorithms ---------
+CALL algo.pageRank.stream('Paper', 'CITED_BY', {iterations:20, dampingFactor:0.85})
+YIELD nodeId, score
+RETURN algo.asNode(nodeId).paper_id AS page,score
+ORDER BY score DESC
+
+CALL algo.betweenness.stream('Paper','CITED_BY',{direction:'out'})
+YIELD nodeId, centrality
+RETURN algo.asNode(nodeId) AS user,centrality
+ORDER BY centrality DESC
+
+CALL algo.closeness.stream('Paper', 'CITED_BY')
+YIELD nodeId, centrality
+RETURN algo.asNode(nodeId) AS node, centrality
+ORDER BY centrality DESC
+
+CALL algo.unionFind.stream('Paper', 'CTIED_BY')
+YIELD nodeId, setId
+RETURN algo.asNode(nodeId) AS Name, setId AS ComponentId
+ORDER BY ComponentId, Name
+
+CALL algo.unionFind('Paper', 'CITED_BY', {
+  write: true,
+  writeProperty: 'componentId'
+})
+YIELD nodes AS Nodes, setCount AS NbrOfComponents, writeProperty AS PropertyName
+
+----------------------------------
