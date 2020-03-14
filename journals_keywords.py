@@ -29,6 +29,7 @@ for index, row in journals.iterrows():
     for keyword in row['title'].split(' '):
         keyword = ''.join(filter(lambda c: c.isalpha(), keyword))
         if (len(keyword) > 3):
+            keyword = keyword.lower()
             k = [[row['id'], row['author'], row['title'], keyword]]
             df = pd.DataFrame(k, columns=columns2)
             keywords = keywords.append(df)
