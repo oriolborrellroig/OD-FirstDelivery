@@ -3,6 +3,7 @@ import csv
 
 from random import seed
 from random import randint
+import numpy as np
 
 seed(1)
 
@@ -40,30 +41,40 @@ auth.to_csv("conferences.csv", mode='w', index=False, sep=';', header=True)
 conferences.to_csv("conferences.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
 
 #Generate Workshop Citations
+
+numberOfCitations = np.random.chisquare(2, size=len(workshops))
+numberOfCitations = list(numberOfCitations)
+for i in range(len(numberOfCitations)):
+    numberOfCitations[i] = int((numberOfCitations[i]*20) + 5)
+
 maxNumberOfArticles = len(workshops)-1
 citations = []
 for i in range(maxNumberOfArticles):
-    numberOfCitations = randint(0, 10)
-    for j in range(numberOfCitations):
+    for j in range(numberOfCitations[i]):
         randomLine = randint(0, maxNumberOfArticles)
         if(workshops.iloc[i]['id'] != workshops.iloc[randomLine]['id'] and workshops.iloc[i]['year'] >= workshops.iloc[randomLine]['year']):
-            newCitation = [workshops.iloc[i]['id'], workshops.iloc[randomLine]['id'], workshops.iloc[i]['year']]
+            newCitation = [workshops.iloc[i]['id'], workshops.iloc[randomLine]['id'], workshops.iloc[randomLine]['year']]
             citations.append(newCitation)
 
-cit = pd.DataFrame(columns=['paperID', 'citedID', 'year'])
+cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
 cit.to_csv("workshops_citations.csv", mode='w', index=False, sep=';', header=True)
 citations = pd.DataFrame(citations)
 citations.to_csv("workshops_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
 
 #Generate Conferences Citations
+
+numberOfCitations = np.random.chisquare(2, size=len(conferences))
+numberOfCitations = list(numberOfCitations)
+for i in range(len(numberOfCitations)):
+    numberOfCitations[i] = int((numberOfCitations[i]*20) + 5)
+
 maxNumberOfArticles = len(conferences)-1
 citations = []
 for i in range(maxNumberOfArticles):
-    numberOfCitations = randint(0, 10)
-    for j in range(numberOfCitations):
+    for j in range(numberOfCitations[i]):
         randomLine = randint(0, maxNumberOfArticles)
         if(conferences.iloc[i]['id'] != conferences.iloc[randomLine]['id'] and conferences.iloc[i]['year'] >= conferences.iloc[randomLine]['year']):
-            newCitation = [conferences.iloc[i]['id'], conferences.iloc[randomLine]['id'], conferences.iloc[i]['year']]
+            newCitation = [conferences.iloc[i]['id'], conferences.iloc[randomLine]['id'], conferences.iloc[randomLine]['year']]
             citations.append(newCitation)
 
 cit = pd.DataFrame(columns=['paperID', 'citedID', 'year'])
