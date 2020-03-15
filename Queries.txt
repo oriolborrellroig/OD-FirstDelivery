@@ -158,7 +158,15 @@ CALL algo.pageRank.stream(
   'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper) RETURN id(p) AS id', 
   'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper)<-[:CITED_BY]-(p2:Paper)-[]->()-[]->()-[:RELATED]->(community) RETURN id(p2) AS source, id(p) AS target',
   {graph:'cypher'}
-) YIELD nodeId, score with algo.asNode(nodeId) as node, score order by score desc LIMIT 100
-RETURN node, score
+) YIELD nodeId, score 
+WITH algo.asNode(nodeId) as node, score order by score desc LIMIT 100
+MATCH (community:Community {name: "database"})
+MERGE (community)<-[:IS_TOP_PAPER {score:score}]-(node)
+RETURN node.paper_title, score
 
 ---------------4-----------------------
+MATCH (community:Community {name:"database"})<-[IS_TOP_PAPER]-(paper1:Paper)<-[:WRITES]-(author1:Author)
+WITH community, paper1, author1
+MATCH (community)<-[IS_TOP_PAPER]-(paper2:Paper)<-[:WRITES]-(author2:Author)
+WHERE paper1.paper_id <> paper2.paper_id and author1 = author2
+RETURN DISTINCT author1
