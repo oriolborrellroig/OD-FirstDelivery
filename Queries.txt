@@ -152,3 +152,13 @@ WITH community, n2, communityPapers, COUNT(paper2) AS totalPapers, (1.0*communit
 WHERE percentage >=0.5
 MERGE (community)<-[:RELATED]-(n2)
 RETURN n2, totalPapers, communityPapers, percentage
+
+---------------3----------------------
+CALL algo.pageRank.stream(
+  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper) RETURN id(p) AS id', 
+  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper)<-[:CITED_BY]-(p2:Paper)-[]->()-[]->()-[:RELATED]->(community) RETURN id(p) AS source, id(p2) AS target',
+  {graph:'cypher'}
+) YIELD nodeId, score with algo.asNode(nodeId) as node, score order by score desc LIMIT 100
+RETURN node.paper_title, score
+
+---------------4-----------------------
