@@ -135,4 +135,20 @@ CALL algo.unionFind('Paper', 'CITED_BY', {
 })
 YIELD nodes AS Nodes, setCount AS NbrOfComponents, writeProperty AS PropertyName
 
-----------------------------------
+---------------D-------------------
+---------------1-------------------
+CREATE (community:Community {name: "database"})
+WITH community
+MATCH (keyword:Keyword)
+WHERE keyword.keyword = "data" OR keyword.keyword = "management" OR keyword.keyword = "indexing" OR keyword.keyword = "modeling" OR keyword.keyword = "processing" OR keyword.keyword = "storage" OR keyword.keyword = "querying"
+MERGE (community)<-[:IS_COMMUNITY]-(keyword)
+
+---------------2-------------------
+MATCH (community:Community)<-[:IS_COMMUNITY]-(keyword:Keyword)<-[:CONTAINS]-(paper1:Paper)-[]->()-[]->(n2)
+WHERE n2:Journal OR n2:Conference
+WITH community, n2, COUNT(paper1) AS communityPapers
+MATCH (paper2:Paper)-[edge]->()-[]->(n2)
+WITH community, n2, communityPapers, COUNT(paper2) AS totalPapers, (1.0*communityPapers/COUNT(paper2)) AS percentage
+WHERE percentage >=0.5
+MERGE (community)<-[:RELATED]-(n2)
+RETURN n2, totalPapers, communityPapers, percentage
