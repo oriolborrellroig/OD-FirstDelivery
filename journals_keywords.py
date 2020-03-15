@@ -2,7 +2,7 @@ import pandas as pd
 import csv
 
 journals = pd.read_csv("./dblp2/output_article.csv",error_bad_lines=False, sep=';', na_values = 'N', 
-                      converters={i: str for i in range(0, 100)}, nrows=3000)
+                      converters={i: str for i in range(0, 100)}, nrows=110000)
 columns = ['id','author', 'journal', 'title', 'volume', 'year', 'mdate', 'key', 'url']
 
 journals = journals[columns]
@@ -13,7 +13,7 @@ journals['title'] = journals['title'].apply(lambda x: x.replace('"', ''))
 #journal-volume
 journals["journalVolume"] = journals["journal"] + '-' + journals["volume"]
 journals['author'] = journals['author'].apply(lambda x: x.split('|')[0])
-journals = journals.iloc[:1000]
+journals = journals.iloc[:100000]
 
 # columns.append('journalVolume')
 # auth = pd.DataFrame(columns=columns)
@@ -24,6 +24,10 @@ columns2 = ['id', 'author', 'title', 'keywords']
 keywords = pd.DataFrame(columns=columns2)
 keywords.to_csv("keywords.csv", mode='w', index=False, sep=';', header=True)
 for index, row in journals.iterrows():
+    if (index%100 == 0):
+        keywords.to_csv("keywords.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
+        keywords = pd.DataFrame(columns=columns2)
+        print(index)
     #title = row[['id', 'author', 'title']]
     #print(len(row['title'].split(' ')))
     for keyword in row['title'].split(' '):

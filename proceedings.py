@@ -23,11 +23,11 @@ proceeding['author'] = proceeding['author'].apply(lambda x: x.split('|')[0])
 
 workshops = proceeding[proceeding['title'].str.contains('workshop', regex=False, case=False)]
 #workshops = workshops.iloc[:1000]
-workshops = workshops.head(1000)
+workshops = workshops.head(10000)
 
 conferences = proceeding[~proceeding['title'].str.contains('workshop', regex=False, na=False, case=False)]
 #conferences = conferences.iloc[:1000]
-conferences = conferences.head(1000)
+conferences = conferences.head(10000)
 
 columns.append('conference')
 columns.append('edition')
