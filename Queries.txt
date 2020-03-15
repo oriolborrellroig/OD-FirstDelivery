@@ -156,9 +156,9 @@ RETURN n2, totalPapers, communityPapers, percentage
 ---------------3----------------------
 CALL algo.pageRank.stream(
   'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper) RETURN id(p) AS id', 
-  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper)<-[:CITED_BY]-(p2:Paper)-[]->()-[]->()-[:RELATED]->(community) RETURN id(p) AS source, id(p2) AS target',
+  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper)<-[:CITED_BY]-(p2:Paper)-[]->()-[]->()-[:RELATED]->(community) RETURN id(p2) AS source, id(p) AS target',
   {graph:'cypher'}
 ) YIELD nodeId, score with algo.asNode(nodeId) as node, score order by score desc LIMIT 100
-RETURN node.paper_title, score
+RETURN node, score
 
 ---------------4-----------------------
