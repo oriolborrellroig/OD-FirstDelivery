@@ -1,3 +1,14 @@
+---------- Index ------------------
+CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE;
+CREATE CONSTRAINT ON (journal:Journal) ASSERT journal.journal_name IS UNIQUE;
+CREATE CONSTRAINT ON (paper:Paper) ASSERT paper.paper_id IS UNIQUE;
+CREATE CONSTRAINT ON (year:Year) ASSERT year.year IS UNIQUE;
+CREATE CONSTRAINT ON (volume:Volume) ASSERT volume.volume_name IS UNIQUE;
+CREATE CONSTRAINT ON (edition:Edition) ASSERT edition.edition_name IS UNIQUE;
+CREATE CONSTRAINT ON (conference:Conference) ASSERT conference.conference_name IS UNIQUE;
+CREATE CONSTRAINT ON (workshop:Workshop) ASSERT workshop.workshop_name IS UNIQUE;
+CREATE CONSTRAINT ON (keyword:Keyword) ASSERT keyword.keyword IS UNIQUE;
+
 --------- See All Objects ---------
 MATCH (n)
 Return n
@@ -170,3 +181,4 @@ WITH community, paper1, author1
 MATCH (community)<-[IS_TOP_PAPER]-(paper2:Paper)<-[:WRITES]-(author2:Author)
 WHERE paper1.paper_id <> paper2.paper_id and author1 = author2
 RETURN DISTINCT author1
+
