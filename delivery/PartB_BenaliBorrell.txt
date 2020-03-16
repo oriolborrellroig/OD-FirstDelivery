@@ -1,0 +1,35 @@
+--------- Q1 ---------
+MATCH (author:Author)-[:WRITES]->(paper1:Paper)-[paper2:CITED_BY]->()
+WITH author, paper1, COUNT(paper2) AS number
+ORDER BY author.author_name, number DESC
+WITH author, collect(number) AS list
+WITH author, list, range(1, size(list), 1) AS indexes
+WITH author, reduce(hindex=0, index IN indexes |
+    CASE WHEN list[index-1] >= index THEN hindex+1 ELSE hindex END
+) as hindex
+RETURN author, hindex
+
+--------- Q2 ---------
+MATCH (conference:Conference)<-[:BELONGS_CONF]-(edition:Edition)
+<-[:PUBLISHED_CONF_EDITION]-(paper1:Paper)<-[cited:CITED_BY]-()
+WITH conference, paper1, COUNT(cited) AS number
+ORDER BY conference.conference_name, number DESC, paper1.paper_id
+WITH conference, collect(paper1) AS paper_list
+UNWIND paper_list[0..3] AS top3
+RETURN conference, collect(top3) AS paper
+
+--------- Q3 ---------
+MATCH (author:Author)-[:WRITES]->(:Paper)-[:PUBLISHED_CONF_EDITION]->
+(edition:Edition)-[:BELONGS_CONF]->(conference:Conference)
+WITH author, conference, collect(DISTINCT edition) AS editions, 
+size(collect(DISTINCT edition)) AS numberEditions
+WHERE numberEditions>=4
+RETURN conference, collect(author)
+
+--------- Q4 ---------
+MATCH (vol:Volume)-[:YEAR_VOLUME]->(y:Year)
+WHERE y.year IN ["2018", "2019"]
+WITH vol
+MATCH (journal:Journal)<-[:BELONGS_JOUR]-(vol:Volume)
+<-[pub:PUBLISHED_VOLUME]-(p:Paper)<-[cited:CITED_BY]-()
+RETURN journal, COUNT(cited)/COUNT(DISTINCT pub) AS impactFactor

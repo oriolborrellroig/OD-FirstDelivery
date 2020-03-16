@@ -1,0 +1,4 @@
+CALL algo.pageRank.stream('Paper', 'CITED_BY', {iterations:20, dampingFactor:0.85})
+YIELD nodeId, score
+RETURN algo.asNode(nodeId).paper_id AS page,score
+ORDER BY score DESC

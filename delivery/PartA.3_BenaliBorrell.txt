@@ -1,0 +1,6 @@
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///reviews.csv' AS article FIELDTERMINATOR ';'
+CREATE (review:Review {})
+MERGE (review)-[:IS_REVIEWER]->(author:Author {author_name: reviews.name})
+MERGE (review)-[:IS_REVIEW_OF]->(paper:Paper {paper_title: reviews.paper})
+MERGE (review)-[:IS_ACCEPTED]->(journal:Journal {journal_name: reviews.journal})

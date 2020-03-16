@@ -1,0 +1,34 @@
+---------------1-------------------
+CREATE (community:Community {name: "database"})
+WITH community
+MATCH (keyword:Keyword)
+WHERE keyword.keyword IN ["data", "management", "indexing", "modeling", "processing", "storage", "querying"]
+MERGE (community)<-[:IS_COMMUNITY]-(keyword)
+
+---------------2-------------------
+MATCH (community:Community)<-[:IS_COMMUNITY]-(keyword:Keyword)<-[:CONTAINS]-(paper1:Paper)-[]->()-[]->(n2)
+WHERE n2:Journal OR n2:Conference
+WITH community, n2, COUNT(paper1) AS communityPapers
+MATCH (paper2:Paper)-[edge]->()-[]->(n2)
+WITH community, n2, communityPapers, COUNT(paper2) AS totalPapers, (1.0*communityPapers/COUNT(paper2)) AS percentage
+WHERE percentage >=0.5
+MERGE (community)<-[:RELATED]-(n2)
+RETURN n2, totalPapers, communityPapers, percentage
+
+---------------3----------------------
+CALL algo.pageRank.stream(
+  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper) RETURN id(p) AS id', 
+  'MATCH (community:Community {name: "database"}) <-[:RELATED]-()<-[]-()<-[]-(p:Paper)<-[:CITED_BY]-(p2:Paper)-[]->()-[]->()-[:RELATED]->(community) RETURN id(p2) AS source, id(p) AS target',
+  {graph:'cypher'}
+) YIELD nodeId, score 
+WITH algo.asNode(nodeId) as node, score order by score desc LIMIT 100
+MATCH (community:Community {name: "database"})
+MERGE (community)<-[:IS_TOP_PAPER {score:score}]-(node)
+RETURN node.paper_title, score
+
+---------------4-----------------------
+MATCH (community:Community {name:"database"})<-[IS_TOP_PAPER]-(paper1:Paper)<-[:WRITES]-(author1:Author)
+WITH community, paper1, author1
+MATCH (community)<-[IS_TOP_PAPER]-(paper2:Paper)<-[:WRITES]-(author2:Author)
+WHERE paper1.paper_id <> paper2.paper_id and author1 = author2
+RETURN DISTINCT author1
