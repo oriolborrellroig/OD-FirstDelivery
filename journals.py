@@ -13,7 +13,7 @@ np.random.seed(seed=1)
 seed(1)
 
 journals = pd.read_csv("./dblp2/output_article.csv",error_bad_lines=False, sep=';', na_values = 'N',
-                      converters={i: str for i in range(0, 100)}, nrows=110000)
+                      converters={i: str for i in range(0, 100)}, nrows=300000)
 columns = ['id','author', 'journal', 'title', 'volume', 'year', 'mdate', 'key', 'url']
 
 journals = journals[columns]

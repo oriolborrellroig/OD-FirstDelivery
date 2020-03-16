@@ -23,11 +23,11 @@ proceeding['author'] = proceeding['author'].apply(lambda x: x.split('|')[0])
 
 workshops = proceeding[proceeding['title'].str.contains('workshop', regex=False, case=False)]
 #workshops = workshops.iloc[:1000]
-workshops = workshops.head(10000)
+workshops = workshops.head(100000)
 
 conferences = proceeding[~proceeding['title'].str.contains('workshop', regex=False, na=False, case=False)]
 #conferences = conferences.iloc[:1000]
-conferences = conferences.head(10000)
+conferences = conferences.head(100000)
 
 columns.append('conference')
 columns.append('edition')
@@ -48,17 +48,25 @@ numberOfCitations = list(numberOfCitations)
 for i in range(len(numberOfCitations)):
     numberOfCitations[i] = int((numberOfCitations[i]*20) + 5)
 
+
+
 maxNumberOfArticles = len(workshops)-1
 citations = []
+cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
+cit.to_csv("workshops_citations.csv", mode='w', index=False, sep=';', header=True)
 for i in range(maxNumberOfArticles):
+    if (i%100 == 0): 
+        citations = pd.DataFrame(citations)
+        citations.to_csv("workshops_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
+        citations = []
+        print(i)
     for j in range(numberOfCitations[i]):
         randomLine = randint(0, maxNumberOfArticles)
         if(workshops.iloc[i]['id'] != workshops.iloc[randomLine]['id'] and workshops.iloc[i]['year'] >= workshops.iloc[randomLine]['year']):
             newCitation = [workshops.iloc[i]['id'], workshops.iloc[randomLine]['id'], workshops.iloc[randomLine]['year']]
             citations.append(newCitation)
 
-cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
-cit.to_csv("workshops_citations.csv", mode='w', index=False, sep=';', header=True)
+
 citations = pd.DataFrame(citations)
 citations.to_csv("workshops_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
 
@@ -69,16 +77,22 @@ numberOfCitations = list(numberOfCitations)
 for i in range(len(numberOfCitations)):
     numberOfCitations[i] = int((numberOfCitations[i]*20) + 5)
 
+
 maxNumberOfArticles = len(conferences)-1
 citations = []
+cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
+cit.to_csv("conferences_citations.csv", mode='w', index=False, sep=';', header=True)
 for i in range(maxNumberOfArticles):
+    if (i%100 == 0): 
+        citations = pd.DataFrame(citations)
+        citations.to_csv("conferences_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
+        citations = []
+        print(i)
     for j in range(numberOfCitations[i]):
         randomLine = randint(0, maxNumberOfArticles)
         if(conferences.iloc[i]['id'] != conferences.iloc[randomLine]['id'] and conferences.iloc[i]['year'] >= conferences.iloc[randomLine]['year']):
             newCitation = [conferences.iloc[i]['id'], conferences.iloc[randomLine]['id'], conferences.iloc[randomLine]['year']]
             citations.append(newCitation)
 
-cit = pd.DataFrame(columns=['paperID', 'cited_byID', 'year'])
-cit.to_csv("conferences_citations.csv", mode='w', index=False, sep=';', header=True)
 citations = pd.DataFrame(citations)
 citations.to_csv("conferences_citations.csv", mode='a', index=False, sep=';',  quoting=csv.QUOTE_ALL, header=False)
